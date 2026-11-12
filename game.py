@@ -1,5 +1,7 @@
 from question_generator import QuestionGenerator
 
+import sys
+
 
 class BrainTrainGame:
     def __init__(self, turns: int=3) -> None:
@@ -8,15 +10,16 @@ class BrainTrainGame:
         self.question_generator = QuestionGenerator()
         self.score= 0
 
-    def __get_question(self) -> tuple[str, float]:
-        return self.question_generator.addition_generation()
-
     def __generate_questions(self) -> None:
         for i in range(1, self.turns + 1):
-            question, answer = self.__get_question()
+            question, answer = self.question_generator.choose_question()
             self.turn_question_dict[i] = (question, answer)
 
     def __validate_number(self, user_answer_str: str) -> float | None:
+        if user_answer_str == "/q":
+            print("Goodbye!")
+            sys.exit()
+
         try:
             return float(user_answer_str)
         except ValueError:
