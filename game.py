@@ -1,23 +1,44 @@
 from question_generator import QuestionGenerator
 
 
-class Game:
-    def __init__(self, turns: int=10) -> None:
+class BrainTrainGame:
+    def __init__(self, turns: int=3) -> None:
         self.turns = turns
+        self.turn_question_dict = {}
         self.question_generator = QuestionGenerator()
+        self.score= 0
 
-    def _get_question(self) -> str:
+    def __get_question(self) -> tuple[str, float]:
         return self.question_generator.addition_generation()
 
-    def ask_question(self) -> str | None:
-        question = self._get_question()
-        user_answer = input(f"{question}: ")
-        try:
-            user_answer = float(user_answer)
-        except ValueError:
-            print("Please enter a number")
-            return
-        return "Correct!" if self._evaluate_answer(user_answer) else "Incorrect!"
+    def __generate_questions(self) -> None:
+        for i in range(1, self.turns + 1):
+            question, answer = self.__get_question()
+            self.turn_question_dict[i] = (question, answer)
 
-    def _evaluate_answer(self, user_answer: float) -> bool:
-        return user_answer == self.question_generator.answer
+    def __validate_number(self, user_answer_str: str) -> float | None:
+        try:
+            return float(user_answer_str)
+        except ValueError:
+            print("Please enter a number\n")
+
+    def __evaluate_answer(self, user_answer: float, correct_answer: float) -> bool:
+        return user_answer == correct_answer
+
+    def __ask_question(self, turn: int, question: str) -> float:
+        user_answer_str = input(f"{turn}. {question}: ")
+        user_answer = self.__validate_number(user_answer_str)
+        return user_answer or self.__ask_question(turn, question)
+
+
+    def start_game(self):
+        self.__generate_questions()
+        for turn, (question, correct_answer) in self.turn_question_dict.items():
+            user_answer = self.__ask_question(turn, question)
+            if self.__evaluate_answer(user_answer, correct_answer):
+                self.score += 1
+                print("Correct!\n")
+            else:
+                print(f"Incorrect! Answer was: {correct_answer}\n")
+        print(f"Final score: {self.score}/{self.turns}")
+

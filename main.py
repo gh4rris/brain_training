@@ -1,10 +1,9 @@
-from game import Game
+from game import BrainTrainGame
 
 
 def main():
-    game = Game()
-    response = game.ask_question()
-    print(response)
+    game = BrainTrainGame()
+    game.start_game()
 
 
 if __name__ == "__main__":
