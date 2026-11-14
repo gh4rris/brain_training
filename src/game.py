@@ -1,20 +1,20 @@
 from question_generator import QuestionGenerator
-from models import Player, Base
+from player_select import PlayerSelect
+from models import Player
 
 import sys
-from sqlalchemy import create_engine
+from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
 
 class BrainTrainGame:
-    def __init__(self, db_url: str, turns: int=3) -> None:
+    def __init__(self, engine: Engine, player_select: PlayerSelect, turns: int=3) -> None:
+        self.engine = engine
+        self.player_select = player_select
         self.turns = turns
         self.turn_question_dict = {}
         self.question_generator = QuestionGenerator()
         self.score= 0
-        self.player = "George"
-        self.engine = create_engine(db_url)
-        Base.metadata.create_all(self.engine)
 
     def __generate_questions(self) -> None:
         for i in range(1, self.turns + 1):
