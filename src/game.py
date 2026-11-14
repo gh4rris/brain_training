@@ -1,14 +1,20 @@
 from question_generator import QuestionGenerator
+from models import Player, Base
 
 import sys
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 
 class BrainTrainGame:
-    def __init__(self, turns: int=3) -> None:
+    def __init__(self, db_url: str, turns: int=3) -> None:
         self.turns = turns
         self.turn_question_dict = {}
         self.question_generator = QuestionGenerator()
         self.score= 0
+        self.player = "George"
+        self.engine = create_engine(db_url)
+        Base.metadata.create_all(self.engine)
 
     def __generate_questions(self) -> None:
         for i in range(1, self.turns + 1):
@@ -43,5 +49,11 @@ class BrainTrainGame:
                 print("Correct!\n")
             else:
                 print(f"Incorrect! Answer was: {correct_answer}\n")
+
+        with Session(self.engine) as sess:
+            player = Player(name=self.player, best_score=self.score)
+            sess.add(player)
+            sess.commit()
+
         print(f"Final score: {self.score}/{self.turns}")
 
