@@ -1,6 +1,5 @@
 from config import DB_URL
 from game import BrainTrainGame
-from player_select import PlayerSelect
 from models import Base
 
 import sys
@@ -14,12 +13,10 @@ def main():
     Base.metadata.create_all(engine)
     Session = sessionmaker(engine)
 
-    # player_select = PlayerSelect(engine)
-    # player_select.create_player("George")
-    # player = player_select.choose_player()
     random.seed(666)
     try:
         game = BrainTrainGame(Session)
+        game.create_or_choose_player()
         game.start_game()
     except KeyboardInterrupt:
         print("\nGoodbye!")
