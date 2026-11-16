@@ -16,7 +16,6 @@ def main():
     random.seed(666)
     try:
         game = BrainTrainGame(Session)
-        game.create_or_choose_player()
         game.start_game()
     except KeyboardInterrupt:
         print("\nGoodbye!")

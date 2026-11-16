@@ -1,6 +1,6 @@
 from question_generator import QuestionGenerator
 from player_select import PlayerSelect
-from models import Player
+from models import PlayerModel
 from utils import validate_number
 
 from sqlalchemy.orm import Session, sessionmaker
@@ -31,7 +31,9 @@ class BrainTrainGame:
 
 
     def start_game(self):
+        self.player_select.choose_player()
         self.__generate_questions()
+
         for turn, (question, correct_answer) in self.turn_question_dict.items():
             user_answer = self.__ask_question(turn, question)
             if self.__evaluate_answer(user_answer, correct_answer):
@@ -42,10 +44,7 @@ class BrainTrainGame:
 
         if self.player_select.active_player:
             with self.session.begin() as session:
-                session.execute(update(Player).values(best_score=self.score).where(Player.id == self.player_select.active_player.id))
+                session.execute(update(PlayerModel).values(best_score=self.score).where(PlayerModel.id == self.player_select.active_player.id))
 
         print(f"Final score: {self.score}/{self.turns}")
-
-    def create_or_choose_player(self):
-        self.player_select.active_player = self.player_select.choose_player()
 

@@ -1,9 +1,10 @@
-from models import Player
+from models import PlayerModel
+from schemas import Player
 from utils import validate_integer
 
-from typing import Sequence
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql import select
+from pydantic import ValidationError
 
 
 class PlayerSelect:
@@ -11,7 +12,7 @@ class PlayerSelect:
         self.session = Session
         self.active_player: Player | None = None
 
-    def __get_choice_id(self, players: Sequence[Player]) -> int | None:
+    def __get_choice_id(self, players: list[Player]) -> int:
         print("Select Player:")
 
         print("0. Create new player")
@@ -25,19 +26,20 @@ class PlayerSelect:
 
     def __create_player(self, name: str) -> int:
         with self.session() as session:
-            player = Player(
+            player = PlayerModel(
                 name=name,
                 best_score=None
             )
             session.add(player)
             session.commit()
-        print(f"Player {name} created")
+        print(f"Player {name} created\n")
         return player.id
 
 
-    def choose_player(self) -> Player | None:
+    def choose_player(self) -> None:
         with self.session() as session:
-            players = session.scalars(select(Player)).all()
+            result = session.scalars(select(PlayerModel)).all()
+            players = [Player.model_validate(p) for p in result]
 
         selected_id = self.__get_choice_id(players)
 
@@ -45,13 +47,12 @@ class PlayerSelect:
             selected_id = self.__create_player("Bob")
 
         with self.session() as session:
-            player = session.scalar(select(Player).where(Player.id == selected_id))
+            player_choice = session.get(PlayerModel, selected_id)
 
-        if player:
-            print(f"{player.name} selected!")
-        else:
-            print("player not found")
+        try:
+            self.active_player = Player.model_validate(player_choice)
+            print(f"{self.active_player.name} selected!\n")
+        except ValidationError:
+            print("Player not found\n")
             self.choose_player()
-
-        return player
 
