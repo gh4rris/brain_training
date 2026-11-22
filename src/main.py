@@ -1,6 +1,5 @@
 from config import DB_URL
 from game import BrainTrainGame
-from models import Base
 
 import sys
 import random
@@ -10,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 
 def main():
     engine = create_engine(DB_URL)
-    Base.metadata.create_all(engine)
     Session = sessionmaker(engine)
 
     random.seed(666)

@@ -22,6 +22,9 @@ class PlayerSelect:
         selected_id_str = input("Enter number: ")
         selected_id = validate_integer(selected_id_str)
 
+        if selected_id == 0:
+            return selected_id
+
         return selected_id or self.__get_choice_id(players)
 
     def __create_player(self, name: str) -> int:
@@ -32,8 +35,9 @@ class PlayerSelect:
             )
             session.add(player)
             session.commit()
+            id = player.id
         print(f"Player {name} created\n")
-        return player.id
+        return id
 
 
     def choose_player(self) -> None:
@@ -44,7 +48,8 @@ class PlayerSelect:
         selected_id = self.__get_choice_id(players)
 
         if selected_id == 0:
-            selected_id = self.__create_player("Bob")
+            player_name = input("\nEnter player name: ")
+            selected_id = self.__create_player(player_name)
 
         with self.session() as session:
             player_choice = session.get(PlayerModel, selected_id)

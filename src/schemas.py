@@ -10,4 +10,4 @@ class Player(BaseModel):
 
     id: int
     name: str
-    best_score: int
+    best_score: int | None

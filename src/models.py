@@ -10,4 +10,5 @@ class PlayerModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(unique=True)
-    best_score: Mapped[int] = mapped_column(nullable=True)
+    best_score: Mapped[int | None]
+
