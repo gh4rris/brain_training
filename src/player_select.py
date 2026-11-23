@@ -10,7 +10,7 @@ from pydantic import ValidationError
 class PlayerSelect:
     def __init__(self, Session: sessionmaker[Session]):
         self.session = Session
-        self.active_player: Player | None = None
+        self.active_player = None
 
     def __get_choice_id(self, players: list[Player]) -> int:
         print("Select Player:")

@@ -1,8 +1,10 @@
 from question_generator import QuestionGenerator
 from player_select import PlayerSelect
 from models import PlayerModel
+from schemas import Player
 from utils import validate_number
 
+from typing import cast
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql import update
 
@@ -42,9 +44,11 @@ class BrainTrainGame:
             else:
                 print(f"Incorrect! Answer was: {correct_answer}\n")
 
-        if self.player_select.active_player:
+        previous_best_score = cast(Player, self.player_select.active_player).best_score or 0
+        if self.score > previous_best_score:
             with self.session.begin() as session:
-                session.execute(update(PlayerModel).values(best_score=self.score).where(PlayerModel.id == self.player_select.active_player.id))
+                session.execute(update(PlayerModel).values(best_score=self.score).where(PlayerModel.id == cast(Player, self.player_select.active_player).id))
+            print("New High Score!!")
 
         print(f"Final score: {self.score}/{self.turns}")
 

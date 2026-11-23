@@ -1,11 +1,17 @@
 import random
+from enum import Enum
 
+
+class QuestionTypes(str, Enum):
+    add = "add"
+    sub = "sub"
+    mul = "mul"
 
 class QuestionGenerator:
     def __init__(self):
         self.var_a = 0
         self.var_b = 0
-        self.question_types = ["add", "sub", "mul"]
+        self.question_types = [QuestionTypes.add, QuestionTypes.sub, QuestionTypes.mul]
 
     def __set_variables(self) -> None:
         self.var_a = round(random.uniform(-100, 100), 2)
@@ -30,11 +36,9 @@ class QuestionGenerator:
     def choose_question(self) -> tuple[str, float]:
         question_type = random.choice(self.question_types)
         match question_type:
-            case "add":
+            case QuestionTypes.add:
                 return self.__addition_generation()
-            case "sub":
+            case QuestionTypes.sub:
                 return self.__subtraction_generation()
-            case "mul":
+            case QuestionTypes.mul:
                 return self.__multiplication_generation()
-            case _:
-                return self.__addition_generation()
